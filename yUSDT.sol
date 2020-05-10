@@ -383,6 +383,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
   address public dydx;
   uint256 public dToken;
   address public apr;
+  uint16 public aaveReferralCode;
 
   enum Lender {
       NONE,
@@ -401,7 +402,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
     aave = address(0x24a42fD28C976A61Df5D00D0599C34c4f90748c8);
     fulcrum = address(0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f);
     aaveToken = address(0x71fc860F7D3A592A4a98740e39dB31d25db65ae8);
-    compound = address(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
+    compound = address(0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9);
     dToken = 0;
     approveToken();
   }
@@ -418,6 +419,10 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
   }
   function set_new_DTOKEN(uint256 _new_DTOKEN) public onlyOwner {
       dToken = _new_DTOKEN;
+  }
+
+  function set_new_AaveReferralCode(uint16 _new_AaveReferralCode) public onlyOwner {
+    aaveReferralCode = _new_AaveReferralCode;
   }
 
   // Quick swap low gas method for pool swaps
@@ -718,7 +723,7 @@ contract yUSDT is ERC20, ERC20Detailed, ReentrancyGuard, Ownable, Structs {
   }
 
   function supplyAave(uint amount) public {
-      Aave(getAave()).deposit(token, amount, 0);
+      Aave(getAave()).deposit(token, amount, aaveReferralCode);
   }
   function supplyFulcrum(uint amount) public {
       require(Fulcrum(fulcrum).mint(address(this), amount) > 0, "FULCRUM: supply failed");
